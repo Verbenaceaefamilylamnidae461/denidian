@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- WiX source for the Windows .msi installer, built with msitools `wixl`.
+     File @Source values are resolved from the build output dir passed via
+     `wixl -I dist/win/denidian`. Build:
+
+       wixl -a x64 -o dist/release/denidian-x86_64-pc-windows-msvc.msi \
+         -I dist/win/denidian installer/windows.wxs
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*"
+           Name="denidian"
+           Language="1033"
+           Version="0.1.0"
+           Manufacturer="denidian"
+           UpgradeCode="509552B2-9C7B-4E70-9E32-7B0B1D4E87FB">
+    <Package InstallerVersion="200"
+             Compressed="yes"
+             InstallScope="perMachine"
+             Description="denidian — a tiny note app built on deno desktop" />
+
+    <Media Id="1" Cabinet="denidian.cab" EmbedCab="yes" />
+
+    <Icon Id="AppIcon.ico" SourceFile="AppIcon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLDIR" Name="denidian">
+          <Component Id="MainApp" Win64="yes"
+                     Guid="FA3F9B57-E103-406C-B7FF-D4AFFB46F488">
+            <File Id="laufey" Name="laufey_webview.exe" Source="laufey_webview.exe" KeyPath="yes" />
+            <File Id="runtime" Name="denidian.dll" Source="denidian.dll" />
+            <File Id="appicon" Name="AppIcon.ico" Source="AppIcon.ico" />
+            <File Id="launcher" Name="denidian.bat" Source="denidian.bat" />
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder">
+        <!-- Shortcuts launch the webview host directly so no console window
+             appears (unlike the .bat). -->
+        <Component Id="Shortcuts" Win64="yes"
+                   Guid="7DEF593C-FE9C-479E-AD2B-CF200A549ED3">
+          <Shortcut Id="StartMenuShortcut"
+                    Name="denidian"
+                    Target="[INSTALLDIR]laufey_webview.exe"
+                    Arguments="--runtime &quot;[INSTALLDIR]denidian.dll&quot;"
+                    WorkingDirectory="INSTALLDIR"
+                    Icon="AppIcon.ico" />
+          <Shortcut Id="DesktopShortcut"
+                    Directory="DesktopFolder"
+                    Name="denidian"
+                    Target="[INSTALLDIR]laufey_webview.exe"
+                    Arguments="--runtime &quot;[INSTALLDIR]denidian.dll&quot;"
+                    WorkingDirectory="INSTALLDIR"
+                    Icon="AppIcon.ico" />
+          <RegistryValue Root="HKCU" Key="Software\denidian" Name="installed"
+                         Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </Directory>
+
+      <Directory Id="DesktopFolder" />
+    </Directory>
+
+    <Feature Id="Complete" Level="1">
+      <ComponentRef Id="MainApp" />
+      <ComponentRef Id="Shortcuts" />
+    </Feature>
+  </Product>
+</Wix>

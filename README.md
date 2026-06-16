@@ -109,7 +109,7 @@ Prebuilt downloads are on the
 | macOS (Apple)   | `denidian-aarch64-apple-darwin.dmg`       |
 | macOS (Intel)   | `denidian-x86_64-apple-darwin.dmg`        |
 | Linux (x86_64)  | `denidian-x86_64-unknown-linux-gnu.AppImage` |
-| Windows (x86_64)| `denidian-x86_64-pc-windows-msvc.zip`     |
+| Windows (x86_64)| `denidian-x86_64-pc-windows-msvc.msi`     |
 
 `deno desktop` cross-compiles for every platform from a single machine — it
 downloads the matching prebuilt runtime and UI backend, so no per-platform
@@ -125,14 +125,32 @@ deno desktop -A --include ./web --backend webview \
 
 deno desktop -A --include ./web --backend webview \
   --target x86_64-unknown-linux-gnu --output dist/denidian-x86_64-unknown-linux-gnu.AppImage main.ts
-
-deno desktop -A --include ./web --backend webview --icon ./icons/app.ico \
-  --target x86_64-pc-windows-msvc --output dist/denidian-x86_64-pc-windows-msvc main.ts
 ```
 
 Supported targets: `aarch64-apple-darwin`, `x86_64-apple-darwin`,
 `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`,
 `x86_64-pc-windows-msvc`. Build them all at once with `--all-targets`.
+
+### Windows installer (`.msi`)
+
+`deno desktop` emits a Windows app *directory*, not an installer. denidian wraps
+that directory into a proper `.msi` with [msitools](https://wiki.gnome.org/msitools)
+(`wixl`), which works on macOS/Linux too — so the installer can be cross-built
+from the same machine. The MSI installs to `Program Files\denidian` and adds
+Start Menu and Desktop shortcuts.
+
+```sh
+# 1. Build the Windows app directory.
+deno desktop -A --include ./web --backend webview --icon ./icons/app.ico \
+  --target x86_64-pc-windows-msvc --output dist/win/denidian main.ts
+
+# 2. Wrap it into an MSI (brew install msitools / apt-get install wixl).
+(cd dist/win/denidian && \
+  wixl -a x64 -o ../../release/denidian-x86_64-pc-windows-msvc.msi \
+    -I . ../../../installer/windows.wxs)
+```
+
+The WiX source lives in [`installer/windows.wxs`](./installer/windows.wxs).
 
 ### Backends and size
 
@@ -144,9 +162,9 @@ on macOS, ~375 MB as a Linux AppImage). For an app this simple, webview is the
 better trade, and it's the default in `deno.json` and the tasks above.
 
 Output formats are picked from the extension: macOS `.app`/`.dmg`, Linux
-`.AppImage` (or a plain directory), Windows directory (zip it to distribute).
-The macOS `.dmg` is produced with `hdiutil`, so it must be built on a macOS
-host; everything else cross-compiles from anywhere.
+`.AppImage` (or a plain directory), Windows directory (wrapped into an `.msi`
+above). The macOS `.dmg` is produced with `hdiutil`, so it must be built on a
+macOS host; everything else (including the `.msi`) cross-compiles from anywhere.
 
 ## Project layout
 

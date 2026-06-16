@@ -8,6 +8,10 @@ force-directed graph shows how they connect.
 It's deliberately small — a single Deno HTTP server plus a vanilla
 HTML/CSS/JS frontend, no framework and no build step for the UI.
 
+![denidian editor](./docs/editor.png)
+
+![denidian graph view](./docs/graph.png)
+
 ## Features
 
 - **Notes** — create, rename, edit, and delete Markdown notes from the sidebar,

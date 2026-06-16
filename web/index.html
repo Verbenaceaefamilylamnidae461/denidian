@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>denidian</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <aside id="sidebar">
+        <header class="sidebar-head">
+          <h1 class="brand">denidian</h1>
+          <button id="new-note" title="New note (Ctrl/Cmd+N)">+</button>
+        </header>
+        <input id="search" type="search" placeholder="Search notes..." autocomplete="off" />
+        <nav id="note-list"></nav>
+        <footer class="sidebar-foot">
+          <button id="view-editor" class="view-tab active">Editor</button>
+          <button id="view-graph" class="view-tab">Graph</button>
+        </footer>
+      </aside>
+
+      <main id="main">
+        <section id="editor-view">
+          <div class="note-bar">
+            <input id="title" type="text" placeholder="Untitled" spellcheck="false" />
+            <div class="spacer"></div>
+            <button id="toggle-preview" title="Toggle edit / read">Read</button>
+            <button id="delete-note" title="Delete note">Delete</button>
+          </div>
+          <div class="panes">
+            <textarea id="editor" placeholder="Write Markdown. Link notes with [[Title]]." spellcheck="false"></textarea>
+            <article id="preview" class="hidden"></article>
+          </div>
+        </section>
+
+        <section id="graph-view" class="hidden">
+          <div class="graph-toolbar">
+            <span class="graph-hint">Drag nodes &middot; drag background to pan &middot; scroll to zoom &middot; click to open</span>
+            <div class="spacer"></div>
+            <div class="zoom-controls">
+              <button id="zoom-out" title="Zoom out">&minus;</button>
+              <button id="zoom-reset" title="Reset zoom">Reset</button>
+              <button id="zoom-in" title="Zoom in">+</button>
+            </div>
+          </div>
+          <svg id="graph"></svg>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,257 @@
+:root {
+  --bg: #1a1a1e;
+  --bg-2: #202027;
+  --bg-3: #26262e;
+  --border: #33333d;
+  --text: #d6d6df;
+  --text-dim: #8a8a99;
+  --accent: #a585ff;
+  --accent-dim: #6d5bb5;
+  --danger: #e06c75;
+  font-size: 14px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+}
+
+#app { display: flex; height: 100vh; }
+
+/* ---------------- Sidebar ---------------- */
+#sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 8px;
+}
+
+.brand {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+
+#new-note {
+  width: 28px;
+  height: 28px;
+  font-size: 18px;
+  line-height: 1;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-3);
+  color: var(--text);
+  cursor: pointer;
+}
+#new-note:hover { background: var(--accent-dim); border-color: var(--accent); }
+
+#search {
+  margin: 4px 12px 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+#search:focus { border-color: var(--accent-dim); }
+
+#note-list { flex: 1; overflow-y: auto; padding: 0 8px; }
+
+.note-item {
+  padding: 7px 10px;
+  margin: 2px 0;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.note-item:hover { background: var(--bg-3); color: var(--text); }
+.note-item.active { background: var(--accent-dim); color: #fff; }
+
+.sidebar-foot {
+  display: flex;
+  border-top: 1px solid var(--border);
+}
+.view-tab {
+  flex: 1;
+  padding: 11px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 13px;
+}
+.view-tab:hover { color: var(--text); }
+.view-tab.active { color: var(--accent); box-shadow: inset 0 2px 0 var(--accent); }
+
+/* ---------------- Main ---------------- */
+#main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.hidden { display: none !important; }
+
+#editor-view { display: flex; flex-direction: column; height: 100%; }
+
+.note-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.note-bar .spacer { flex: 1; }
+
+#title {
+  font-size: 18px;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  outline: none;
+  width: 100%;
+  max-width: 520px;
+}
+
+.note-bar button {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-3);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 13px;
+}
+.note-bar button:hover { color: var(--text); border-color: var(--accent-dim); }
+#delete-note:hover { color: var(--danger); border-color: var(--danger); }
+
+.panes { flex: 1; min-height: 0; display: flex; }
+
+#editor {
+  flex: 1;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 24px 28px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+#preview {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px;
+  line-height: 1.7;
+}
+#preview.hidden { display: none; }
+
+/* Markdown styling */
+#preview h1, #preview h2, #preview h3 { line-height: 1.3; margin: 1.2em 0 0.5em; }
+#preview h1 { font-size: 1.7em; border-bottom: 1px solid var(--border); padding-bottom: .2em; }
+#preview h2 { font-size: 1.35em; }
+#preview h3 { font-size: 1.12em; }
+#preview p { margin: 0.6em 0; }
+#preview ul, #preview ol { padding-left: 1.4em; }
+#preview li { margin: 0.2em 0; }
+#preview code {
+  background: var(--bg-3);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.9em;
+}
+#preview pre {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+#preview pre code { background: none; padding: 0; }
+#preview blockquote {
+  margin: 0.6em 0;
+  padding-left: 12px;
+  border-left: 3px solid var(--accent-dim);
+  color: var(--text-dim);
+}
+#preview a { color: var(--accent); }
+.wikilink {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--accent-dim);
+  cursor: pointer;
+}
+.wikilink.missing { color: var(--danger); border-bottom-color: var(--danger); }
+.wikilink:hover { background: var(--bg-3); }
+
+/* ---------------- Graph ---------------- */
+#graph-view { height: 100%; display: flex; flex-direction: column; }
+.graph-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 13px;
+}
+.graph-toolbar .spacer { flex: 1; }
+.zoom-controls { display: flex; gap: 6px; }
+.zoom-controls button {
+  min-width: 30px;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-3);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+.zoom-controls button:hover { border-color: var(--accent); color: var(--accent); }
+#graph { flex: 1; width: 100%; display: block; cursor: grab; touch-action: none; }
+#graph .edge { stroke: var(--border); stroke-width: 1.5; }
+#graph .node circle {
+  fill: var(--bg-3);
+  stroke: var(--accent);
+  stroke-width: 2;
+  cursor: pointer;
+  transition: fill 0.12s;
+}
+#graph .node:hover circle { fill: var(--accent-dim); }
+#graph .node.active circle { fill: var(--accent); }
+#graph .node text {
+  fill: var(--text);
+  font-size: 11px;
+  text-anchor: middle;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.55;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+#graph .node:hover text { opacity: 1; font-weight: 600; }
+#graph .node.active text { opacity: 1; fill: var(--accent); }

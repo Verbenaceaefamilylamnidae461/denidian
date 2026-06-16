@@ -1,0 +1,22 @@
+{
+  "version": "0.1.0",
+  "tasks": {
+    "dev": "deno desktop --hmr -A --include ./web main.ts",
+    "start": "deno desktop -A --include ./web main.ts",
+    "build": "deno desktop -A --include ./web --output ./dist/Denidian.app main.ts"
+  },
+  "desktop": {
+    "app": {
+      "name": "denidian",
+      "identifier": "com.denidian.app",
+      "icons": {
+        "macos": "./icons/app.icns",
+        "linux": "./icons/app-512.png"
+      }
+    },
+    "backend": "webview",
+    "output": {
+      "macos": "./dist/Denidian.app"
+    }
+  }
+}

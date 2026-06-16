@@ -1,8 +1,9 @@
 # denidian
 
 A tiny [Obsidian](https://obsidian.md)-style note app built on the new
-**`deno desktop`** subcommand. Notes are plain Markdown files, you cross-link
-them with `[[wikilinks]]`, and a force-directed graph shows how they connect.
+**`deno desktop`** subcommand ([denoland/deno#33441](https://github.com/denoland/deno/pull/33441)).
+Notes are plain Markdown files, you cross-link them with `[[wikilinks]]`, and a
+force-directed graph shows how they connect.
 
 It's deliberately small — a single Deno HTTP server plus a vanilla
 HTML/CSS/JS frontend, no framework and no build step for the UI.

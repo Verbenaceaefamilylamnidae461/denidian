@@ -176,12 +176,61 @@ await seedVault();
 // In a `deno desktop` build, adopt the startup window to set its title and a
 // sensible default size. Guarded so plain `deno run` (browser dev) still works.
 const WIN_W = 2000, WIN_H = 1000;
-const desktop = Deno as unknown as {
-  BrowserWindow?: new (opts: Record<string, unknown>) => {
-    setSize?: (w: number, h: number) => void;
-    setTitle?: (t: string) => void;
-  };
+type DesktopWindow = {
+  setSize?: (w: number, h: number) => void;
+  setTitle?: (t: string) => void;
+  setApplicationMenu?: (menu: unknown[]) => void;
+  executeJs?: (code: string) => Promise<unknown>;
+  addEventListener?: (
+    type: string,
+    cb: (e: { detail?: { id?: string } }) => void,
+  ) => void;
 };
+const desktop = Deno as unknown as {
+  BrowserWindow?: new (opts: Record<string, unknown>) => DesktopWindow;
+};
+
+function applicationMenu() {
+  const item = (label: string, id: string, accelerator?: string) => ({
+    item: { label, id, accelerator, enabled: true },
+  });
+  const role = (r: string) => ({ role: { role: r } });
+  return [
+    { submenu: { label: "denidian", items: [role("quit")] } },
+    {
+      submenu: {
+        label: "File",
+        items: [
+          item("New Note", "new-note", "CmdOrCtrl+N"),
+          item("Delete Note", "delete-note", "CmdOrCtrl+Backspace"),
+        ],
+      },
+    },
+    {
+      submenu: {
+        label: "Edit",
+        items: [
+          role("undo"),
+          role("redo"),
+          "separator",
+          role("cut"),
+          role("copy"),
+          role("paste"),
+        ],
+      },
+    },
+    {
+      submenu: {
+        label: "View",
+        items: [
+          item("Toggle Read Mode", "toggle-read", "CmdOrCtrl+E"),
+          item("Toggle Graph", "toggle-graph", "CmdOrCtrl+G"),
+        ],
+      },
+    },
+  ];
+}
+
 if (desktop.BrowserWindow) {
   const win = new desktop.BrowserWindow({
     title: "denidian",
@@ -195,6 +244,20 @@ if (desktop.BrowserWindow) {
   size();
   win.setTitle?.("denidian");
   setTimeout(size, 250);
+
+  // Native menu bar: Quit (Cmd+Q) plus standard Edit roles and app actions.
+  // Custom items are forwarded to the webview via a small global it exposes.
+  win.setApplicationMenu?.(applicationMenu());
+  win.addEventListener?.("menuclick", (e) => {
+    const id = e.detail?.id;
+    const calls: Record<string, string> = {
+      "new-note": "globalThis.denidian?.newNote()",
+      "delete-note": "globalThis.denidian?.deleteNote()",
+      "toggle-read": "globalThis.denidian?.toggleRead()",
+      "toggle-graph": "globalThis.denidian?.toggleGraph()",
+    };
+    if (id && calls[id]) win.executeJs?.(calls[id]);
+  });
 }
 
 Deno.serve(async (req) => {

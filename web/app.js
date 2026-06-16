@@ -546,6 +546,18 @@ document.addEventListener("keydown", (e) => {
 
 window.addEventListener("beforeunload", flushSave);
 
+// Bridge for the native application menu (see main.ts). The menu forwards
+// clicks here via executeJs.
+globalThis.denidian = {
+  newNote: () => createNote("Untitled"),
+  deleteNote: () => deleteCurrent(),
+  toggleRead: () => { showEditor(); setPreview(!state.preview); },
+  toggleGraph: () => {
+    if (els.graphView.classList.contains("hidden")) showGraph();
+    else showEditor();
+  },
+};
+
 // --------------------------------------------------------------------------
 // Boot
 // --------------------------------------------------------------------------

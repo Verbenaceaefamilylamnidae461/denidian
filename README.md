@@ -99,6 +99,55 @@ The app needs read/write/env permissions (for the vault and `$HOME`), which the
 tasks grant with `-A`. The UI assets in `web/` are embedded into the compiled
 binary via `--include ./web`.
 
+## Building for distribution
+
+Prebuilt downloads are on the
+[releases page](https://github.com/bartlomieju/denidian/releases):
+
+| Platform        | Download                                  |
+| --------------- | ----------------------------------------- |
+| macOS (Apple)   | `denidian-aarch64-apple-darwin.dmg`       |
+| macOS (Intel)   | `denidian-x86_64-apple-darwin.dmg`        |
+| Linux (x86_64)  | `denidian-x86_64-unknown-linux-gnu.AppImage` |
+| Windows (x86_64)| `denidian-x86_64-pc-windows-msvc.zip`     |
+
+`deno desktop` cross-compiles for every platform from a single machine — it
+downloads the matching prebuilt runtime and UI backend, so no per-platform
+toolchain is needed. The output format is chosen by the file extension.
+
+```sh
+# Each target downloads its backend on first build.
+deno desktop -A --include ./web --backend webview \
+  --target aarch64-apple-darwin --output dist/denidian-aarch64-apple-darwin.dmg main.ts
+
+deno desktop -A --include ./web --backend webview \
+  --target x86_64-apple-darwin --output dist/denidian-x86_64-apple-darwin.dmg main.ts
+
+deno desktop -A --include ./web --backend webview \
+  --target x86_64-unknown-linux-gnu --output dist/denidian-x86_64-unknown-linux-gnu.AppImage main.ts
+
+deno desktop -A --include ./web --backend webview --icon ./icons/app.ico \
+  --target x86_64-pc-windows-msvc --output dist/denidian-x86_64-pc-windows-msvc main.ts
+```
+
+Supported targets: `aarch64-apple-darwin`, `x86_64-apple-darwin`,
+`x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`,
+`x86_64-pc-windows-msvc`. Build them all at once with `--all-targets`.
+
+### Backends and size
+
+`--backend webview` uses the operating system's built-in webview (WKWebView on
+macOS, WebView2 on Windows, WebKitGTK on Linux), which keeps the download small
+— denidian is ~30 MB per platform. The alternative, `--backend cef`, bundles
+Chromium for pixel-identical rendering everywhere, at the cost of size (~150 MB+
+on macOS, ~375 MB as a Linux AppImage). For an app this simple, webview is the
+better trade, and it's the default in `deno.json` and the tasks above.
+
+Output formats are picked from the extension: macOS `.app`/`.dmg`, Linux
+`.AppImage` (or a plain directory), Windows directory (zip it to distribute).
+The macOS `.dmg` is produced with `hdiutil`, so it must be built on a macOS
+host; everything else cross-compiles from anywhere.
+
 ## Project layout
 
 ```
@@ -112,5 +161,6 @@ denidian/
 └── icons/
     ├── icon.svg     # source icon (a little node-graph glyph)
     ├── app.icns     # macOS app icon
+    ├── app.ico      # Windows app icon
     └── app-512.png  # Linux app icon
 ```

